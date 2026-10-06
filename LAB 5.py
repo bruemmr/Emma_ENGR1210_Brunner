@@ -1,15 +1,3 @@
-# =============================================================================
-# ENGR1210 — Morse Code Translator Project
-# Week 5 Lab: Dictionaries
-# Chapter 6 — Python Crash Course, 3rd Edition
-#
-# Standalone script. Still no functions, still no imports.
-# New tool this week: DICTIONARIES. For four weeks you've looked letters up
-# by scanning a list with .index(). A dictionary replaces all of that with
-# a direct, one-step lookup — and a second dictionary will let you decode.
-# =============================================================================
-
-# --- Carried forward: the codebook as (letter, pattern) tuples ---------------
 CODEBOOK = [
     ('A', '.-'),   ('B', '-...'), ('C', '-.-.'), ('D', '-..'),  ('E', '.'),
     ('F', '..-.'), ('G', '--.'),  ('H', '....'), ('I', '..'),   ('J', '.---'),
@@ -18,7 +6,7 @@ CODEBOOK = [
     ('U', '..-'),  ('V', '...-'), ('W', '.--'),  ('X', '-..-'), ('Y', '-.--'),
     ('Z', '--..'),
 ]
-
+    # The lines above create a list of tuples, of letters and their associated pattern by using [] and ().
 
 # =============================================================================
 # SECTION 1 — ANCHOR
@@ -26,28 +14,39 @@ CODEBOOK = [
 print("=" * 52)
 print("SECTION 1: ANCHOR — The Encode Map")
 print("=" * 52)
+    # These lines print a header for Section 1, which is about the Encode Map.
 
-# A dictionary stores key -> value pairs. Here the KEY is a letter and the
-# VALUE is its pattern. We build it from CODEBOOK with a dict comprehension.
 ENCODE_MAP = {letter: pattern for (letter, pattern) in CODEBOOK}
+    # The line above creates a variable with a comprehension that builds a dictionary from the list of tuples (CODEBOOK). 
+    # The for (letter,pattern) in CODEBOOK reads over each tuple and unpacks it so that letter and pattern are available to used in this comprehension.
+    # This unpacked tuple can then be used to create a dictionary with the letter: pattern key-value pair.
 
 print(f"\nENCODE_MAP has {len(ENCODE_MAP)} entries.")
 print(f"Looking up 'S': {ENCODE_MAP['S']}     (one step — no scanning!)")
 print(f"Looking up 'O': {ENCODE_MAP['O']}")
+    # The lines above are f-strings that print a newline, "ENCODE_MAP has (length of encode_map) entries." 
+    # and then look up the letter 'S' and 'O' in the ENCODE_MAP dictionary and print their associated patterns.
 
-# -- Safe lookup with .get() -----------------------------------------------
-# ENCODE_MAP['@'] would CRASH with a KeyError. .get() returns a default
-# instead, which is perfect for "unknown character -> '?'".
+            # -- Safe lookup with .get() -----------------------------------------------
+            # ENCODE_MAP['@'] would CRASH with a KeyError. .get() returns a default
+            # instead, which is perfect for "unknown character -> '?'".
+
 print(f"Looking up '@': {ENCODE_MAP.get('@', '?')}   (.get returns '?' for unknowns)")
+    # This line prints the f-string "Looking up '@': (the result of ENCODE_MAP.get('@', '?')) (.get returns '?' for unknowns)".
 
 # -- ANCHOR QUESTIONS ------------------------------------------------------
-# Q1. Last week a lookup for 'Z' scanned 26 entries. How many entries does
-#     ENCODE_MAP['Z'] check? Why doesn't dictionary size slow it down?
-# Q2. What is the difference between ENCODE_MAP['@'] and
-#     ENCODE_MAP.get('@', '?') ? When would each be the right choice?
-# Q3. Why can a dictionary NEVER have the parallel-list bug from Week 2,
-#     where a letter and its pattern drift out of alignment?
+# Q1. Last week a lookup for 'Z' scanned 26 entries. How many entries does ENCODE_MAP['Z'] check? Why doesn't dictionary size slow it down?
+    # In the dictionary it uses the key directly to find the value, so it only checks one entry. It does not slow it down because it uses a hash table to 
+    # store the key-value pairs.
 
+# Q2. What is the difference between ENCODE_MAP['@'] and ENCODE_MAP.get('@', '?') ? When would each be the right choice?
+    # Encode_MAP['@'] will raise a KeyError because '@' is not a key in the dictionary, while ENCODE_MAP.get('@', '?') will return '?' as a default value for unknown 
+    # characters. Use ENCODE_MAP['@'] when the key exists and want to catch errors if it doesn't, and use ENCODE_MAP.get('@', '?') to handle unknown keys without 
+    # raising an error.
+
+# Q3. Why can a dictionary NEVER have the parallel-list bug from Week 2, where a letter and its pattern drift out of alignment?
+    # A dictionary uses key-value pairs, so the letter is directly associated with the pattern. This prevents the parallel-list bug because of the association between 
+    # the letters and patterns is maintained through the dictionary structure. So they cannot drift out of alignment.
 
 # =============================================================================
 # SECTION 2 — GUIDED
@@ -55,17 +54,18 @@ print(f"Looking up '@': {ENCODE_MAP.get('@', '?')}   (.get returns '?' for unkno
 print("\n" + "=" * 52)
 print("SECTION 2: GUIDED — The Decode Map and a Round Trip")
 print("=" * 52)
+    # The lines above print a header for Section 2, which is about the Decode Map and a Round Trip.
 
-# To DECODE we need the mirror dictionary: pattern -> letter.
-# TODO Step 1: build DECODE_MAP by flipping ENCODE_MAP. Use a dict
-#              comprehension over ENCODE_MAP.items():
-#                  {pattern: letter for letter, pattern in ENCODE_MAP.items()}
-DECODE_MAP = {}    # TODO: replace {} with the comprehension above
+DECODE_MAP = {pattern: letter for letter, pattern in ENCODE_MAP.items()}   
+#ENCODE_MAP = {letter: pattern for (letter, pattern) in CODEBOOK}
+    # The line above 
 
 print(f"\nDECODE_MAP has {len(DECODE_MAP)} entries.")
+    # This line prints the f-string "DECODE_MAP has (length of DECODE_MAP) entries."
 
 # -- Encode a message using the dictionary ---------------------------------
 message  = "SOS"
+
 encoded  = []
 for character in message.upper():
     if character == ' ':
@@ -74,16 +74,15 @@ for character in message.upper():
         encoded.append(ENCODE_MAP.get(character, '?'))
 print(f"\nEncoded '{message}' -> {encoded}")
 
-# -- Decode it back using the mirror dictionary ----------------------------
-# TODO Step 2: loop over 'encoded'. For each pattern, if it is ' ' append a
-#              space ' ' to 'decoded_chars'; otherwise use DECODE_MAP.get()
-#              with a default of '?' and append the letter.
 decoded_chars = []
-# (write your loop here)
+for pattern in encoded:
+    if pattern == ' ':
+        decoded_chars.append(' ')
+    else:
+        decoded_chars.append(DECODE_MAP.get(pattern, '?'))
 
 decoded = "".join(decoded_chars)
-print(f"Decoded back   -> '{decoded}'")
-# Expected once complete: 'SOS'
+print(f"Decoded back  -> '{decoded}'")
 
 
 # =============================================================================
@@ -92,9 +91,8 @@ print(f"Decoded back   -> '{decoded}'")
 print("\n" + "=" * 52)
 print("SECTION 3: EXTENSION — Round-Trip Check on a Phrase")
 print("=" * 52)
+    # These lines above print a header for Section 3, which is about Round-Trip Check on a Phrase.
 
-# A good translator should satisfy: decode(encode(text)) == text
-# (ignoring case). Worked helper data: a phrase with two words.
 phrase = "HI MOM"
 
 encoded_phrase = []
@@ -105,13 +103,18 @@ for character in phrase.upper():
         encoded_phrase.append(ENCODE_MAP.get(character, '?'))
 print(f"\nEncoded '{phrase}' -> {encoded_phrase}")
 
+decoded_phrase_chars = []
+for pattern in encoded_phrase:
+    if pattern == ' ':
+        decoded_phrase_chars.append(' ')
+    else:
+        decoded_phrase_chars.append(DECODE_MAP.get(pattern, '?'))
+print(f"Decoded back  -> '{''.join(decoded_phrase_chars)}'")
+
 # -- YOUR EXTENSION --------------------------------------------------------
-# Decode 'encoded_phrase' back into text (remember: ' ' -> ' '). Then print
-# whether the round trip matched the original uppercased phrase.
-# Hint: build the decoded string, then compare it to phrase.upper().
-
-# TODO: decode encoded_phrase and report whether the round trip matched
-
+# Decode 'encoded_phrase' back into text (remember: ' ' -> ' '). Then print whether the round trip matched the original uppercased phrase.
+    # The round trip did match the all caps phrase. Even if the phrase came in with mixed case, the round trip would still match the original phrase 
+    # because the encode function converts all characters to uppercase before encoding.
 
 # =============================================================================
 # SECTION 4 — STRETCH
@@ -119,30 +122,42 @@ print(f"\nEncoded '{phrase}' -> {encoded_phrase}")
 print("\n" + "=" * 52)
 print("SECTION 4: STRETCH — Add the Digits, and Audit the Maps")
 print("=" * 52)
+    # This section prints a header for Section 4, which is about adding the digits and auditing the maps.
 
-# 1. Add the ten digits 0-9 to the project. Their patterns are:
-#       0 -----   1 .----   2 ..---   3 ...--   4 ....-
-#       5 .....   6 -....   7 --...   8 ---..   9 ----.
-#    Extend CODEBOOK (or build a digits dict) and rebuild ENCODE_MAP and
-#    DECODE_MAP so numbers encode and decode too. Test with "SOS 911".
-#
-# 2. Audit: confirm len(ENCODE_MAP) == len(DECODE_MAP). If they differ, two
-#    different letters share a pattern — which would be a real bug. Explain
-#    why flipping a dictionary can silently lose entries.
+DIGITS_CODEBOOK = [
+    ('0', '-----'), ('1', '.----'), ('2', '..---'), ('3', '...--'), ('4', '....-'),
+    ('5', '.....'), ('6', '-....'), ('7', '--...'), ('8', '---..'), ('9', '----.'),
+]
+    # The lines above create a list of tuples, of digits and their associated pattern by using [] and ().
 
-# TODO: implement the stretch challenge here
+ENCODE_DIGITS_MAP = {letter: pattern for (letter, pattern) in DIGITS_CODEBOOK}
+DECODE_DIGITS_MAP = {pattern: letter for letter, pattern in DIGITS_CODEBOOK}
+    # The lines above turn the list of tuples into two dictionaries, one for encoding and one for decoding the digits.
+
+print(f"\nENCODE_DIGITS_MAP has {len(ENCODE_DIGITS_MAP)} entries.")
+print(f"\nDECODE_DIGITS_MAP has {len(DECODE_DIGITS_MAP)} entries.")
 
 
-# =============================================================================
-# CHECKLIST
-#   [ ] ANCHOR:    ran the encode map; answered Q1-Q3
-#   [ ] GUIDED:    DECODE_MAP built; 'SOS' round-trips back to 'SOS'
-#   [ ] EXTENSION: 'HI MOM' round-trips and reports a match
-#   [ ] STRETCH:   (optional) digits added; map sizes audited
-#   [ ] I can explain why dict lookup beats scanning a list
-#
-# LOOKING AHEAD — Week 6
-#   Next week: INPUT and WHILE LOOPS. You'll turn this into an interactive
-#   translator — type a message, get Morse back, repeat until you quit —
-#   and start measuring received pulse durations to decode real signals.
-# =============================================================================
+phrase = "SOS 911"
+
+encoded_phrase = []
+for character in phrase.upper():
+    if character == ' ':
+        encoded_phrase.append(' ')
+    elif character in ENCODE_DIGITS_MAP:
+        encoded_phrase.append(ENCODE_DIGITS_MAP[character])
+    else:
+        encoded_phrase.append(ENCODE_MAP.get(character, '?'))
+print(f"\nEncoded '{phrase}' -> {encoded_phrase}")
+
+decoded_phrase_chars = []
+for pattern in encoded_phrase:
+    if pattern == ' ':
+        decoded_phrase_chars.append(' ')
+    elif pattern in DECODE_DIGITS_MAP:
+        decoded_phrase_chars.append(DECODE_DIGITS_MAP[pattern])
+    else:
+        decoded_phrase_chars.append(DECODE_MAP.get(pattern, '?'))
+print(f"Decoded back  -> '{''.join(decoded_phrase_chars)}'")  
+
+
