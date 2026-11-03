@@ -25,24 +25,29 @@ def blink_pattern(pattern):
             hw.set_led_timed(False, LETTER_GAP_MS)
             continue
         else:
-            hw.set_led_timed(False, WORD_GAP_MS)
             continue
 
-        hw.set_led_timed(True, on_ms) 
+        hw.set_led_timed(True, on_ms)
         hw.set_led_timed(False, SYMBOL_GAP_MS)
 
     print("...done")
 
-# The SAME loop runs in both worlds. You type a morse pattern; the HAL blinks it.
-# On the laptop, "the LED" is the [LED] ON/OFF lines. On the board, it's the
-# real onboard LED (type your message in the serial console / Wokwi's Serial
-# Monitor). 
-print("Board:", hw.board_info())      # tells you which world the HAL picked
+
+print("Board:", hw.board_info())
 print("Type a message and watch it blink. Type 'quit' to stop.")
 
 while True:
-    pattern = input("\nMorse pattern to blink (or 'quit'): ").strip()
-    if pattern.lower() == "quit":
+    message = input("\nWord to transmit (or 'quit'): ").strip()
+
+    if message.lower() == "quit":
         break
-    if pattern:
-        blink_pattern(pattern)
+
+    if message:
+        morse_patterns = encode_message(message)
+
+        print("Morse code:", morse_patterns)
+
+        for pattern in morse_patterns:
+            blink_pattern(pattern)
+            hw.set_led_timed(False, LETTER_GAP_MS)
+            
